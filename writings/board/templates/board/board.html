@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WritingsOnTheWall</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #FAE3D9;
+            text-align: center;
+        }
+        .container {
+            width: 60%;
+            margin: auto;
+        }
+        .post {
+            background: #FFB6C1;
+            border-radius: 15px;
+            padding: 15px;
+            margin: 20px 0;
+            box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.1);
+        }
+        .reply {
+            background: #A2D2FF;
+            margin-left: 40px;
+            padding: 10px;
+            border-radius: 10px;
+        }
+        .post img, .post video {
+            max-width: 100%;
+            border-radius: 10px;
+        }
+        button {
+            background: #FFC9A9;
+            border: none;
+            padding: 10px;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>WritingsOnTheWall</h1>
+
+    <div class="container">
+        <form action="{% url 'post_message' %}" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="text" name="author" placeholder="Your Name (optional)">
+            <textarea name="text" placeholder="Write your message..." required></textarea>
+            <input type="file" name="media">
+            <button type="submit">Post</button>
+        </form>
+
+        {% for post in posts %}
+            <div class="post">
+                <p><strong>{{ post.author }}</strong></p>
+                <p>{{ post.text }}</p>
+                {% if post.media %}
+                    {% if post.media.url|lower|slice:'-3:' == 'mp4' %}
+                        <video controls>
+                            <source src="{{ post.media.url }}" type="video/mp4">
+                        </video>
+                    {% else %}
+                        <img src="{{ post.media.url }}" alt="Attached media">
+                    {% endif %}
+                {% endif %}
+                <p><small>Posted on {{ post.created_at }}</small></p>
+            </div>
+        {% endfor %}
+    </div>
+</body>
+</html>
